@@ -80,17 +80,15 @@ class SingleLinkedList {
         Node* node_{};
     };
 
-    void FillList(const std::initializer_list<Type>& values) {
-        Iterator insert_pos = before_begin();
-        for (const Type& value : values) {
-            insert_pos = InsertAfter(insert_pos, value);
-        }
-    }
-
-    void FillList(const SingleLinkedList& values) {
-        Iterator insert_pos = before_begin();
-        for (const Type& value : values) {
-            insert_pos = InsertAfter(insert_pos, value);
+    //Тут компилятор еще не знает что такое Iterator и ConstIterator
+    //и использую typename как auto, потому что не хочу переносить 
+    // этот метод ниже объявления итераторов и просто попробовать, че будет.
+    //Типов 2, потому что pos это Iterator
+    //a start и end могут быть как Iterator, так и ConstIterator
+    template <typename PosIt, typename OtherIt>
+    void FillIt(PosIt pos, const OtherIt& start, const OtherIt& end) {
+        for (auto it = start; it != end; ++it) {
+            pos = InsertAfter(pos, *it);
         }
     }
 
@@ -106,11 +104,11 @@ public:
     }
 
     SingleLinkedList(std::initializer_list<Type> values) {
-        FillList(values);
+        FillIt(before_begin(), values.begin(), values.end());
     }
 
     SingleLinkedList(const SingleLinkedList& other) {
-        FillList(other);
+        FillIt(before_begin(), other.begin(), other.end());
     }
 
     SingleLinkedList& operator =(const SingleLinkedList& other) {
